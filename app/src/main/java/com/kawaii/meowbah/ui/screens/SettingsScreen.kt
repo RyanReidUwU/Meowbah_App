@@ -417,7 +417,7 @@ fun SettingsScreen(
                     modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
                 )
                 Text(
-                    text = "This app was made with ❤️ by SilverMane69",
+                    text = "This app was made with ❤️ by Ryan Reid",
                     style = MaterialTheme.typography.bodySmall,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth().padding(top = 4.dp)

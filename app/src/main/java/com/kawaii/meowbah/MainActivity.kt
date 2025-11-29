@@ -21,14 +21,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding // Ensure this is available
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Article
 import androidx.compose.material.icons.filled.FormatPaint
 import androidx.compose.material.icons.filled.FormatQuote
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Storefront
 import androidx.compose.material.icons.filled.Videocam
-import androidx.compose.material.icons.outlined.Article
 import androidx.compose.material.icons.outlined.FormatPaint
 import androidx.compose.material.icons.outlined.FormatQuote
 import androidx.compose.material.icons.outlined.Settings
@@ -88,7 +86,6 @@ import com.kawaii.meowbah.ui.notifications.MeowTalkScheduler
 import com.kawaii.meowbah.ui.screens.FanArtScreen
 import com.kawaii.meowbah.ui.screens.SettingsScreen
 import com.kawaii.meowbah.ui.screens.MeowTalkScreen
-import com.kawaii.meowbah.ui.screens.PostsScreen
 import com.kawaii.meowbah.ui.screens.VideosScreen
 import com.kawaii.meowbah.ui.screens.merch.MerchDetailScreen
 import com.kawaii.meowbah.ui.screens.merch.MerchScreen
@@ -97,7 +94,6 @@ import com.kawaii.meowbah.ui.screens.videos.VideosViewModel
 import com.kawaii.meowbah.ui.theme.AvailableTheme
 import com.kawaii.meowbah.ui.theme.MeowbahTheme
 import com.kawaii.meowbah.ui.theme.allThemes
-import com.kawaii.meowbah.workers.PostsSyncWorker
 import com.kawaii.meowbah.workers.YoutubeSyncWorker
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -116,7 +112,6 @@ sealed class BottomNavItem(
     object Art : BottomNavItem(route = "art_tab", label = "Art", Icons.Filled.FormatPaint, outlinedIcon = Icons.Outlined.FormatPaint)
     object Merch : BottomNavItem("merch_tab", "Merch", Icons.Filled.Storefront, Icons.Outlined.Storefront)
     object MeowTalk : BottomNavItem(route = "meowtalk_tab", label = "MeowTalk", Icons.Filled.FormatQuote, outlinedIcon = Icons.Outlined.FormatQuote)
-    object Posts : BottomNavItem("posts_tab", "Posts", Icons.Filled.Article, Icons.Outlined.Article)
     object Settings : BottomNavItem("settings_tab", "Settings", Icons.Filled.Settings, Icons.Outlined.Settings)
 }
 
@@ -125,7 +120,6 @@ val bottomNavItems = listOf(
     BottomNavItem.Art,
     BottomNavItem.Merch,
     BottomNavItem.MeowTalk,
-    BottomNavItem.Posts,
     BottomNavItem.Settings
 )
 
@@ -283,7 +277,6 @@ class MainActivity : ComponentActivity() {
         handleIntentForNavigation(intent) 
         createMeowTalkNotificationChannel()
         scheduleYoutubeSync()
-        schedulePostsSync()
 
         val sharedPrefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val welcomeDialogAlreadyShown = sharedPrefs.getBoolean(KEY_WELCOME_DIALOG_SHOWN, false)
@@ -418,23 +411,6 @@ class MainActivity : ComponentActivity() {
             periodicSyncRequest
         )
         Log.i(TAG, "YoutubeSyncWorker (RSS) scheduled to run every 30 minutes.")
-    }
-
-    private fun schedulePostsSync() { 
-        val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
-
-        val periodicSyncRequest = PeriodicWorkRequestBuilder<PostsSyncWorker>(
-            15, TimeUnit.MINUTES
-        ).setConstraints(constraints).build()
-
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-            PostsSyncWorker.WORK_NAME,
-            ExistingPeriodicWorkPolicy.KEEP,
-            periodicSyncRequest
-        )
-        Log.i(TAG, "PostsSyncWorker (RSS) scheduled to run every 15 minutes.")
     }
 }
 
@@ -689,9 +665,6 @@ fun MainScreen(
                     }
                     composable(BottomNavItem.MeowTalk.route) {
                         MeowTalkScreen(navController = innerNavController)
-                    }
-                    composable(BottomNavItem.Posts.route) { 
-                        PostsScreen(navController = innerNavController)
                     }
                     composable(BottomNavItem.Settings.route) {
                         SettingsScreen(
