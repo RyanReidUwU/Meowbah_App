@@ -411,7 +411,7 @@ fun SettingsScreen(
                 ) { Text("Meow's TikTok") }
 
                 Text(
-                    text = "© Meowbah 2022-2025 All Rights Reserved",
+                    text = "© Meowbah 2022-2026 All Rights Reserved",
                     style = MaterialTheme.typography.bodySmall,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
